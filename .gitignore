@@ -4,6 +4,7 @@
 
 # Node
 node_modules/
+app/.expo/
 
 # Python
 __pycache__/

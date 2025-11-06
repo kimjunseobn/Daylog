@@ -25,13 +25,22 @@ make bootstrap
 make dev
 ```
 
+<<<<<<< HEAD
 각 서비스에 대한 자세한 실행 방법은 하위 디렉터리의 README를 참고하세요.
 
 ### 모바일 앱 실행
+=======
+각 서비스에 대한 자세한 실행 방법은 하위 디렉토리의 README를 참고하세요.
+
+모바일 앱 실행:
+>>>>>>> 9dd3b40 (2)
 ```bash
 cd app
 npm install
 EXPO_PUBLIC_GATEWAY_URL=http://localhost:4000/graphql npm run start
 ```
+<<<<<<< HEAD
 
 > 에뮬레이터에서는 게이트웨이 주소를 `http://10.0.2.2:4000/graphql`(Android) 또는 `http://127.0.0.1:4000/graphql`(iOS)로 변경해 주세요.
+=======
+>>>>>>> 9dd3b40 (2)
