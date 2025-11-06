@@ -1,0 +1,100 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: daylog
+      POSTGRES_PASSWORD: daylog
+      POSTGRES_DB: daylog
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  kafka:
+    image: bitnami/kafka:3.6
+    environment:
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+
+  zookeeper:
+    image: bitnami/zookeeper:3.8
+    environment:
+      ZOO_ENABLE_AUTH: "no"
+    ports:
+      - "2181:2181"
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+    depends_on:
+      - ingestion
+      - timeline
+      - label
+
+  ingestion:
+    build: ./services/ingestion
+    ports:
+      - "7001:7000"
+    env_file:
+      - .env
+
+  timeline:
+    build: ./services/timeline
+    ports:
+      - "7002:7000"
+    env_file:
+      - .env
+
+  label:
+    build: ./services/label
+    ports:
+      - "7003:7000"
+    env_file:
+      - .env
+
+  social-feed:
+    build: ./services/social-feed
+    ports:
+      - "7004:7000"
+    env_file:
+      - .env
+
+  community:
+    build: ./services/community
+    ports:
+      - "7005:7000"
+    env_file:
+      - .env
+
+  billing:
+    build: ./services/billing
+    ports:
+      - "7006:7000"
+    env_file:
+      - .env
+
+  activity-classifier:
+    build: ./ml-services/activity-classifier
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+
+volumes:
+  pgdata: {}
