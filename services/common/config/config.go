@@ -13,6 +13,7 @@ type Config struct {
 	Log      LogConfig
 	Postgres PostgresConfig
 	Kafka    KafkaConfig
+	Stripe   StripeConfig
 }
 
 type ServiceConfig struct {
@@ -32,9 +33,14 @@ type PostgresConfig struct {
 }
 
 type KafkaConfig struct {
-	Brokers      []string `envconfig:"KAFKA_BROKERS" default:"localhost:9092"`
+	Brokers       []string `envconfig:"KAFKA_BROKERS" default:"localhost:9092"`
 	ActivityTopic string   `envconfig:"KAFKA_TOPIC_ACTIVITY_RAW" default:"activity.raw"`
 	GroupID       string   `envconfig:"KAFKA_CONSUMER_GROUP" default:"daylog-consumer"`
+}
+
+type StripeConfig struct {
+	APIKey        string `envconfig:"STRIPE_API_KEY"`
+	WebhookSecret string `envconfig:"STRIPE_WEBHOOK_SECRET"`
 }
 
 // MustLoad는 환경변수를 읽어 Config를 반환하며, 실패 시 panic을 발생시킵니다.
@@ -74,4 +80,9 @@ func (c Config) HasPostgres() bool {
 // HasKafka는 Kafka 연결 정보가 설정되어 있는지 여부를 반환합니다.
 func (c Config) HasKafka() bool {
 	return len(c.Kafka.Brokers) > 0 && c.Kafka.Brokers[0] != ""
+}
+
+// HasStripeWebhook는 Stripe 웹훅 검증에 필요한 비밀키가 존재하는지 여부를 반환합니다.
+func (c Config) HasStripeWebhook() bool {
+	return c.Stripe.WebhookSecret != ""
 }

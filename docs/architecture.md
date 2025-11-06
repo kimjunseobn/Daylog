@@ -153,3 +153,19 @@
 - React Native용 수집 SDK를 제작해 백그라운드 데이터 수집과 동의 플로우를 구현합니다.
 - 라벨 데이터를 축적하기 전까지 결정론적 규칙을 포함한 베이스라인 분류기를 배포합니다.
 - 프라이버시 제약과 시각화를 검증하기 위한 합성 데이터 기반 분석 파이프라인을 초기화합니다.
+
+## 12. 현재 구현 스냅샷 (2024-Q4)
+- 공통 Go 패키지(`services/common`)로 설정 로더, 구조화 로깅, Postgres 커넥션 풀, Kafka 퍼블리셔/컨슈머 초안을 제공.
+- Ingestion 서비스는 활동 이벤트 수신 시 Postgres 저장 및 Kafka 퍼블리시, 헬스/레디 체크 엔드포인트를 지원.
+- Timeline 서비스는 Kafka에서 활동 이벤트를 소비해 `timeline_entries`에 업서트하고, 사용자의 타임라인 조회 API를 Postgres 기반으로 응답.
+- Label 서비스는 사용자 라벨의 CRUD 스켈레톤을 갖추고 `/readyz` 헬스 체크와 GraphQL 게이트웨이를 통한 라벨 업서트를 지원.
+- Social Feed 서비스는 Postgres 기반 피드 조회/작성, Kafka 이벤트 발행, `/readyz` 헬스 체크를 제공.
+- Community 서비스는 커뮤니티 생성·목록·가입 API를 Postgres에 연결한 상태로 노출.
+- Billing 서비스는 Stripe 웹훅 시그니처 검증, `user_entitlements` 갱신, REST 조회 API와 `/readyz` 헬스 체크를 구현.
+- GraphQL 게이트웨이는 서비스 엔드포인트를 환경변수로 주입받고, 타임라인·라벨·피드·커뮤니티·결제 조회와 라벨/피드/커뮤니티 Mutation을 노출하며, 간단한 헤더 기반 인증/티어 검증 로직과 upstream 오류 리포팅을 포함.
+
+### 다음 릴리스 준비 과제
+1. Social/Community/Billing 서비스에도 공통 모듈을 적용하고 실제 데이터 저장·조회 로직 연결.
+2. Kafka 스트림을 기반으로 한 타임라인 정제 로직, AI 분류기와의 통합, Feature Store 연계를 위한 배치 파이프라인 구현.
+3. GraphQL 인증/권한 미들웨어와 Pro 티어 제한, Stripe 웹훅을 통한 `user_entitlements` 업데이트를 연결해 엔드투엔드 유료 기능 흐름 완성.
+4. Flyway 마이그레이션 자동화와 GitHub Actions 기반 CI 파이프라인으로 테스트·빌드·배포 체계를 고도화.

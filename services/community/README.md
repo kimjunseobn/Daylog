@@ -4,9 +4,8 @@
 
 ## 사용법
 ```bash
-PORT=7000 go run .
+PORT=7005 POSTGRES_URI=postgres://... go run .
 ```
 
-```bash
-curl http://localhost:7000/v1/communities
-```
+- `GET /readyz`: DB 연결 체크
+- `POST /v1/communities` 및 `POST /v1/communities/{id}/join` 사용 예시는 API 스펙 참고
